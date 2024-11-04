@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Tyaan Singh | Data Science Portfolio</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Tyaan Singh | Data Science Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>singhtyaan@gmail.com (Tyaan Singh)</managingEditor>
+    <webMaster>singhtyaan@gmail.com (Tyaan Singh)</webMaster>
+    <lastBuildDate>Sun, 25 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Analysis of Director Genders in Popular Films</title>
+      <link>/post/analysis-directors/</link>
+      <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate><author>singhtyaan@gmail.com (Tyaan Singh)</author>
+      <guid>/post/analysis-directors/</guid>
+      <description>Check out the Github for this project&#xA;Check out the Shiny app&#xA;Overview After a bit of recent uproar around the director for the Barbie film not recieving an oscar award, I decided that it might be interesting to do a project analysing the disparity between genders of directors in popular films.&#xA;When deciding which dataset to choose, I checked out a few different film sites and their rating systems. I settled on Letterboxd because it seemed to be the site with the highest number of user watches and reviews for most films compared to sites like IMDB and TMDB.</description>
+    </item>
+    <item>
+      <title>Sentiment Analysis of Financial News Headlines with Python - Part 3</title>
+      <link>/post/financial-sentiment-3/</link>
+      <pubDate>Sun, 18 Feb 2024 00:00:00 +0000</pubDate><author>singhtyaan@gmail.com (Tyaan Singh)</author>
+      <guid>/post/financial-sentiment-3/</guid>
+      <description>Check out the Github for this project&#xA;This post is the first of a 3 part series.&#xA;Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis.</description>
+    </item>
+    <item>
+      <title>Sentiment Analysis of Financial News Headlines with Python - Part 2</title>
+      <link>/post/financial-sentiment-2/</link>
+      <pubDate>Sat, 17 Feb 2024 00:00:00 +0000</pubDate><author>singhtyaan@gmail.com (Tyaan Singh)</author>
+      <guid>/post/financial-sentiment-2/</guid>
+      <description>Check out the Github for this project&#xA;This post is the first of a 3 part series.&#xA;Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis.</description>
+    </item>
+    <item>
+      <title>Sentiment Analysis of Financial News Headlines with Python - Part 1</title>
+      <link>/post/financial-sentiment-1/</link>
+      <pubDate>Fri, 16 Feb 2024 00:00:00 +0000</pubDate><author>singhtyaan@gmail.com (Tyaan Singh)</author>
+      <guid>/post/financial-sentiment-1/</guid>
+      <description>Check out the Github for this project&#xA;This post is the first of a 3 part series.&#xA;Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis.</description>
+    </item>
+  </channel>
+</rss>

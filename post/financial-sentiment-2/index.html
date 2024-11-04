@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"><head>
+    <title>Sentiment Analysis of Financial News Headlines with Python - Part 2 · Tyaan Singh</title>
+    <meta charset="utf-8">
+    
+    <meta name="generator" content="Hugo 0.122.0">
+    <meta property="og:title" content="Sentiment Analysis of Financial News Headlines with Python - Part 2" />
+<meta property="og:description" content="Check out the Github for this project
+This post is the first of a 3 part series.
+Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/financial-sentiment-2/" /><meta property="og:image" content="/images/profile.png" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-17T00:00:00+00:00" /><meta property="og:site_name" content="Tyaan Singh" />
+
+
+
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Tyaan Singh | Data Science Portfolio">
+    
+    
+    
+    <link rel="stylesheet" type="text/css" href="/css/style.min.8d51173c47893530a11aef4102557e76fa3f187f170795d0cf913ed7115a5d65.css" integrity="sha256-jVEXPEeJNTChGu9BAlV&#43;dvo/GH8XB5XQz5E&#43;1xFaXWU=" crossorigin="anonymous" type="text/css">
+
+    
+    
+    
+    <script type="text/javascript" src="/js/heyo-header.min.a3fa728a9f57833a31dfb45c48caaf1e4890c8c97f07bd7133fc2359745edb5d.js" integrity="sha256-o/pyip9Xgzox37RcSMqvHkiQyMl/B71xM/wjWXRe210=" crossorigin="anonymous"></script>
+
+    
+    
+    
+    <script src="/js/shiny-iframe.min.f7314e31f57009ab4085fb8e4a656bc19a768ef32184baa6fae653e8a4509dea.js" integrity="sha256-9zFOMfVwCatAhfuOSmVrwZp2jvMhhLqm&#43;uZT6KRQneo=" crossorigin="anonymous"></script>
+
+    
+    
+    <link rel="stylesheet" type="text/css" href="/css/fonts.9398921f2d404983c2b7f9a68ddc72e3f5e58a3e38b0a8e4a70d75c12ebfb7c5.css" integrity="sha256-k5iSHy1ASYPCt/mmjdxy4/Xlij44sKjkpw11wS6/t8U=" crossorigin="anonymous">
+
+    
+    
+    
+    <script type="text/javascript" src="/js/sidebar-toc.min.788b639e2ec681549740b90b3b865d5f9e1789e3ca9c06ccc45d65655434c954.js" integrity="sha256-eItjni7GgVSXQLkLO4ZdX54XiePKnAbMxF1lZVQ0yVQ=" crossorigin="anonymous"></script>
+
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-graph.26b92ed9317bdc6f35642d588bdf3283f40998846e01cf4bee22a126907fbf3b.js" integrity="sha256-Jrku2TF73G81ZC1Yi98yg/QJmIRuAc9L7iKhJpB/vzs=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-digitalRain.af8a7b5c4428cc62d5bf49bf2698d4112c2459ee0c22c1c753ab304aef69888a.js" integrity="sha256-r4p7XEQozGLVv0m/JpjUESwkWe4MIsHHU6swSu9piIo=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-circleBrushStrokes.fe8fc3ee52e1d90e9236be8c36a27711efa024beb4da304829f95dfbb61d6e84.js" integrity="sha256-/o/D7lLh2Q6SNr6MNqJ3Ee&#43;gJL602jBIKfld&#43;7YdboQ=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-meta.71b5202ea881c86ac19e4b55414656a5444204a4ba08ff7368a5aa99c0a60949.js" integrity="sha256-cbUgLqiByGrBnktVQUZWpURCBKS6CP9zaKWqmcCmCUk=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sidebar-sketch.min.2e95015880993ef9abcad62d111decea22406616931bce193254bf8af2339953.js" integrity="sha256-LpUBWICZPvmrytYtER3s6iJAZhaTG84ZMlS/ivIzmVM=" crossorigin="anonymous" defer></script>
+    
+    
+    
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="canonical" href="/post/financial-sentiment-2/">
+    
+    
+    
+    
+    
+
+    
+    <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/images/profile.png" /><meta name="twitter:title" content="Sentiment Analysis of Financial News Headlines with Python - Part 2"/>
+<meta name="twitter:description" content="Check out the Github for this project
+This post is the first of a 3 part series.
+Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis."/>
+
+</head><body>
+        <div class="main">
+            <div class="page-top">
+    <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false" >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    <ul class="nav" id="navMenu">
+        
+        
+            
+            <li><a  href="/"  title="">Home</a></li>
+        
+            
+            <li><a  href="/post/"  title="">Posts</a></li>
+        
+            
+            <li><a  href="/shiny-apps/"  title="">Shiny Apps</a></li>
+        
+            
+            <li><a  href="/cv/"  title="">CV</a></li>
+        
+            
+            <li><a  href="/contact/"  title="">Contact</a></li>
+        
+        <li class="grow"></li>
+        
+        <li>
+            <a class="theme-switch" title="Switch Theme">
+                <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+            <div class="sidebar" id="sidebar">
+    <div class="top-toc">
+        <img src="/images/tyaan-profile.png" alt="profile picture">
+        <a href="/">Tyaan Singh</a>
+        
+        <p>
+            data science portfolio
+        </p>
+        
+    </div>
+    
+    <div class="intro">
+        <p></p>
+    </div>
+    
+
+    <div class="middle-sidebar grow" id="middle-sidebar">
+
+        
+            
+            
+                
+            
+
+            
+        
+    </div>
+
+    <div class="footer">
+        <ul class="social-links">
+            
+            <li>
+                <a href="http://www.linkedin.com/in/tyaansingh" target="_blank" rel="noopener noreferrer" rel="me" aria-label="Linkedin">
+                    <i class="fab fa-linkedin" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://github.com/tyaan" target="_blank" rel="noopener noreferrer" rel="me" aria-label="GitHub">
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="mailto:singhtyaan@gmail.com" target="_blank" rel="noopener noreferrer" rel="me" aria-label="e-mail">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+        </ul>
+
+        <div class="by">by Tyaan Singh <b>·</b> 2024</div>
+    </div>
+</div>
+            <div class="content">
+<div class="post">
+    
+    <div class="post-title">
+        <h1>Sentiment Analysis of Financial News Headlines with Python - Part 2</h1>
+        
+            <div class="post-header">
+    <div style="padding-top: 10px;">
+        <i class="far fa-calendar"></i><span class="date">Feb 17, 2024</span>
+        <i class="far fa-clock"></i><span class="reading-time">5 minutes</span>
+        
+
+
+    </div>
+</div>
+        
+    </div>
+    <div class="post-content">
+        <hr>
+<blockquote>
+<p>Check out the <a href="https://github.com/tyaan/Stock-Prediction-with-Sentiment-Analysis">Github for this project</a></p>
+</blockquote>
+<p>This post is the first of a 3 part series.</p>
+<ul>
+<li><a href="/post/financial-sentiment-1/">Part 1</a> - Scraping financial news headlines.</li>
+<li><a href="/post/financial-sentiment-2/">Part 2</a> - Performing sentiment analysis to get sentiment scores for each headline.</li>
+<li><a href="/post/financial-sentiment-3/">Part 3</a> - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day.</li>
+</ul>
+<p>This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis. I&rsquo;m going to write it in a tutorial style if anyone out there wants to follow along.</p>
+<hr>
+<p>To perform our sentiment analysis we are going to be using the finBERT model, a natural language processing model trained on a dataset of financial language.</p>
+<p>There are many ways to perform sentiment analysis on text, let&rsquo;s run through a few of them and see why I settled on finBERT.</p>
+<p>Lexicon based approaches use a predefined dictionary/lexicon of words and phrases each labelled with sentiment scores. This approach matches words found in the input text with words in the lexicon, and aggregates the scores from each word to give a total sentiment score for the input text. The commonly used VADER lexicon included in the nltk library outputs a score between 0 and 1 for categories Positive, Negative and Neutral for any input text.</p>
+<p>Although this approach is good for general text data, the VADER lexicon is not specifically trained on financial text, which contains some unusual words like bearish and bullish that have specific meanings in the financial domain. To combat this you could use a lexicon speifically designed for financial text such as the Loughran-McDonald dictionary, which contains financial words and scores for more categories associated with the finance domain, rather than just positive and negative.</p>
+<p>The issue with lexicon based approaches like this, is that they may fail to pick up the greater context that a word or phrase is in. For example if the input is &ldquo;Apple destroys competitors once again&rdquo;, the negative connotation of the word &ldquo;destroys&rdquo; would be picked up, but the overall positive sentiment might not. This method also doesn&rsquo;t take into account bidirectional context, i.e. words that are negated by subsequented words. For example, if the input is &ldquo;Apple was riding high, until today&rdquo;, the lexicon might match the positive sentiment of &ldquo;riding high&rdquo;, but wouldn&rsquo;t understand that this is then negated by &ldquo;until today&rdquo;.</p>
+<p>So&hellip; introducing BERT (<em>angels sing</em>). BERT is a transformer architechture natural language processing model that is good at capturing long range dependencies in text, i.e. a word at the very end of a sentence that is negated by a word at the very start of a sentence, and also processes text in both directions to capture bidirectional context. We will be using finBERT, a version of BERT fine tuned on a dataset of financial language.</p>
+<p>Ok now that&rsquo;s out of the way, let&rsquo;s get into some Python!</p>
+<p>In part 1 we saved a csv file containing around 4 years of news headlines dating from today back to 2019. Let&rsquo;s start by loading that csv back into a data frame. We will also filter by headlines containing the word &ldquo;apple&rdquo; or AAPL, as I noticed on the investopedia site that quite a few of the article headlines in AAPL news weren&rsquo;t directly about apple stock.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> pandas <span style="color:#ff79c6">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_news <span style="color:#ff79c6">=</span> pd<span style="color:#ff79c6">.</span>read_csv(<span style="color:#f1fa8c">&#34;investopedia_articles.csv&#34;</span>)
+</span></span><span style="display:flex;"><span>df_news <span style="color:#ff79c6">=</span> df_news[df_news[<span style="color:#f1fa8c">&#34;Headline&#34;</span>]<span style="color:#ff79c6">.</span>str<span style="color:#ff79c6">.</span>contains(<span style="color:#f1fa8c">&#34;apple|AAPL&#34;</span>, <span style="color:#ff79c6">case</span><span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>, regex<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)]<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pd<span style="color:#ff79c6">.</span>set_option(<span style="color:#f1fa8c">&#39;display.max_colwidth&#39;</span>, <span style="color:#ff79c6">None</span>)
+</span></span><span style="display:flex;"><span>df_news<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img1.png" alt="financial-sentiment-2-img1"></p>
+<p>I also noticed a few of the article headlines were doubled up, sometimes from different news sources or at different times. Let&rsquo;s check how many.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">len</span>(df_news)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> total headlines&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">len</span>(df_news[<span style="color:#f1fa8c">&#39;Headline&#39;</span>]<span style="color:#ff79c6">.</span>unique())<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> unique headlines&#34;</span>)
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img2.png" alt="financial-sentiment-2-img2"></p>
+<p>Lots of duplicates! Ok let&rsquo;s remove all rows where the article headline is duplicated. The keep=&ldquo;first&rdquo; argument keeps the first row wherever there is a duplicate found. I&rsquo;mn checking the length of the data frame just to make sure it matches the number of unique article headlines.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df_news <span style="color:#ff79c6">=</span> df_news<span style="color:#ff79c6">.</span>drop_duplicates(subset<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#34;Headline&#34;</span>], keep<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;first&#34;</span>)<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">len</span>(df_news)
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img3.png" alt="financial-sentiment-2-img3"></p>
+<p>All right, looking good, now let&rsquo;s move on to the sentiment analaysis. First we will load the finBERT model from huggingface.</p>
+<pre tabindex="0"><code>from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+tokenizer = AutoTokenizer.from_pretrained(&#34;ProsusAI/finbert&#34;)
+model = AutoModelForSequenceClassification.from_pretrained(&#34;ProsusAI/finbert&#34;)
+</code></pre><p>Next let&rsquo;s perform the sentiment analysis on each headline. The finBERT model outputs scores for the categories Positive Negative and Neutral, which we will add to our headlines dataframe. Although it&rsquo;s possible to process multiple headlines at once with the model, I decided to do one at a time, as large input batch sizes kept crashing on my computer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch 
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> tqdm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Loops through each headline in the dataframe. The tqdm module provides a loading bar for loops. </span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> headline <span style="color:#ff79c6">in</span> tqdm<span style="color:#ff79c6">.</span>tqdm(<span style="color:#8be9fd;font-style:italic">list</span>(df_news[<span style="color:#f1fa8c">&#39;Headline&#39;</span>])):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Converts the text into inputs tokens that the model can read</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">input</span> <span style="color:#ff79c6">=</span> tokenizer(headline, return_tensors<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;pt&#39;</span>, padding<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>, truncation<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Computes the model outputs</span>
+</span></span><span style="display:flex;"><span>    outputs <span style="color:#ff79c6">=</span> model(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">input</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Normalises model output values using the softmax function</span>
+</span></span><span style="display:flex;"><span>    sentiments <span style="color:#ff79c6">=</span> torch<span style="color:#ff79c6">.</span>nn<span style="color:#ff79c6">.</span>functional<span style="color:#ff79c6">.</span>softmax(outputs<span style="color:#ff79c6">.</span>logits, dim<span style="color:#ff79c6">=-</span><span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Adds the computed sentiment values to the dataframe row containing the analyzed headline</span>
+</span></span><span style="display:flex;"><span>    df_news<span style="color:#ff79c6">.</span>loc[df_news[<span style="color:#f1fa8c">&#39;Headline&#39;</span>]<span style="color:#ff79c6">==</span>headline, <span style="color:#f1fa8c">&#34;Positive&#34;</span>] <span style="color:#ff79c6">=</span> sentiments[<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>tolist()
+</span></span><span style="display:flex;"><span>    df_news<span style="color:#ff79c6">.</span>loc[df_news[<span style="color:#f1fa8c">&#39;Headline&#39;</span>]<span style="color:#ff79c6">==</span>headline, <span style="color:#f1fa8c">&#34;Negative&#34;</span>] <span style="color:#ff79c6">=</span> sentiments[<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>tolist()
+</span></span><span style="display:flex;"><span>    df_news<span style="color:#ff79c6">.</span>loc[df_news[<span style="color:#f1fa8c">&#39;Headline&#39;</span>]<span style="color:#ff79c6">==</span>headline, <span style="color:#f1fa8c">&#34;Neutral&#34;</span>] <span style="color:#ff79c6">=</span> sentiments[<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">2</span>]<span style="color:#ff79c6">.</span>tolist()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_news<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img4.png" alt="financial-sentiment-2-img4"></p>
+<p>Now let&rsquo;s take a look and see if our sentiment analysis is making sense. Let&rsquo;s check out the headlines that have been assigned high values of negative sentiment or positive sentiment and see if they actually are negative and positive headlines.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pd<span style="color:#ff79c6">.</span>set_option(<span style="color:#f1fa8c">&#39;display.max_colwidth&#39;</span>, <span style="color:#ff79c6">None</span>)
+</span></span><span style="display:flex;"><span>df_news<span style="color:#ff79c6">.</span>loc[df_news[<span style="color:#f1fa8c">&#34;Negative&#34;</span>]<span style="color:#ff79c6">&gt;</span><span style="color:#bd93f9">0.8</span>, [<span style="color:#f1fa8c">&#34;Headline&#34;</span>, <span style="color:#f1fa8c">&#34;Negative&#34;</span>]]<span style="color:#ff79c6">.</span>head(<span style="color:#bd93f9">10</span>)
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img5.png" alt="financial-sentiment-2-img5"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pd<span style="color:#ff79c6">.</span>set_option(<span style="color:#f1fa8c">&#39;display.max_colwidth&#39;</span>, <span style="color:#ff79c6">None</span>)
+</span></span><span style="display:flex;"><span>df_news<span style="color:#ff79c6">.</span>loc[df_news[<span style="color:#f1fa8c">&#34;Positive&#34;</span>]<span style="color:#ff79c6">&gt;</span><span style="color:#bd93f9">0.8</span>, [<span style="color:#f1fa8c">&#34;Headline&#34;</span>, <span style="color:#f1fa8c">&#34;Positive&#34;</span>]]<span style="color:#ff79c6">.</span>head(<span style="color:#bd93f9">10</span>)
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-2-img6.png" alt="financial-sentiment-2-img6"></p>
+<p>Looks good to me, at a glance, the headlines are pretty clearly negative or positive.</p>
+<p>Now let&rsquo;s just save our dataframe to a csv file and we&rsquo;re all done.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df_news<span style="color:#ff79c6">.</span>to_csv(<span style="color:#f1fa8c">&#34;headlines_w_sentiment.csv&#34;</span>, index<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>)
+</span></span></code></pre></div><p>See you in <a href="/post/financial-sentiment-3/">Part 3</a>, where we will aggregate our sentiment scores to give a sentiment value for any given day, and compare this with the price movement of apple stock over the following day.</p>
+<p>Thanks for reading!</p>
+
+    </div>
+    <div class="post-footer">
+        <div class="info">
+            
+            <span class="separator"><a class="tag" href="/tags/python/">Python</a><a class="tag" href="/tags/web-scraping/">Web Scraping</a><a class="tag" href="/tags/sentiment-analysis/">Sentiment Analysis</a><a class="tag" href="/tags/finance/">Finance</a></span>
+        </div>
+        
+
+
+    </div>
+    
+        
+    
+</div>
+
+                <div class="grow"></div>
+                <div class="built-with">
+    Built with <a href="https://gohugo.io/">Hugo</a> <b>·</b> Using the <a href="https://github.com/LucasVadilho/heyo-hugo-theme">heyo</a> theme
+</div>
+            </div>
+        </div>
+        
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script type="text/javascript">
+            
+            
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$','$$'], ['\\[', '\\]']]
+                },
+                svg: {
+                    scale: 1.25,
+                }
+            };
+        </script><script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.1.0/es5/tex-mml-svg.min.js" integrity="sha512-/mL9Gs6E5Bz6NtPOr9eY&#43;T8IIdJbo2JL3TudApzFFelwBXEc3TeFLU6kPq122TJROv7jkktuBRkz5h8vGzrsyA==" crossorigin="anonymous"></script>
+    </body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"><head>
+    <title>Sentiment Analysis of Financial News Headlines with Python - Part 3 · Tyaan Singh</title>
+    <meta charset="utf-8">
+    
+    <meta name="generator" content="Hugo 0.122.0">
+    <meta property="og:title" content="Sentiment Analysis of Financial News Headlines with Python - Part 3" />
+<meta property="og:description" content="Check out the Github for this project
+This post is the first of a 3 part series.
+Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/financial-sentiment-3/" /><meta property="og:image" content="/images/profile.png" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-18T00:00:00+00:00" /><meta property="og:site_name" content="Tyaan Singh" />
+
+
+
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Tyaan Singh | Data Science Portfolio">
+    
+    
+    
+    <link rel="stylesheet" type="text/css" href="/css/style.min.8d51173c47893530a11aef4102557e76fa3f187f170795d0cf913ed7115a5d65.css" integrity="sha256-jVEXPEeJNTChGu9BAlV&#43;dvo/GH8XB5XQz5E&#43;1xFaXWU=" crossorigin="anonymous" type="text/css">
+
+    
+    
+    
+    <script type="text/javascript" src="/js/heyo-header.min.a3fa728a9f57833a31dfb45c48caaf1e4890c8c97f07bd7133fc2359745edb5d.js" integrity="sha256-o/pyip9Xgzox37RcSMqvHkiQyMl/B71xM/wjWXRe210=" crossorigin="anonymous"></script>
+
+    
+    
+    
+    <script src="/js/shiny-iframe.min.f7314e31f57009ab4085fb8e4a656bc19a768ef32184baa6fae653e8a4509dea.js" integrity="sha256-9zFOMfVwCatAhfuOSmVrwZp2jvMhhLqm&#43;uZT6KRQneo=" crossorigin="anonymous"></script>
+
+    
+    
+    <link rel="stylesheet" type="text/css" href="/css/fonts.9398921f2d404983c2b7f9a68ddc72e3f5e58a3e38b0a8e4a70d75c12ebfb7c5.css" integrity="sha256-k5iSHy1ASYPCt/mmjdxy4/Xlij44sKjkpw11wS6/t8U=" crossorigin="anonymous">
+
+    
+    
+    
+    <script type="text/javascript" src="/js/sidebar-toc.min.788b639e2ec681549740b90b3b865d5f9e1789e3ca9c06ccc45d65655434c954.js" integrity="sha256-eItjni7GgVSXQLkLO4ZdX54XiePKnAbMxF1lZVQ0yVQ=" crossorigin="anonymous"></script>
+
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-graph.26b92ed9317bdc6f35642d588bdf3283f40998846e01cf4bee22a126907fbf3b.js" integrity="sha256-Jrku2TF73G81ZC1Yi98yg/QJmIRuAc9L7iKhJpB/vzs=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-digitalRain.af8a7b5c4428cc62d5bf49bf2698d4112c2459ee0c22c1c753ab304aef69888a.js" integrity="sha256-r4p7XEQozGLVv0m/JpjUESwkWe4MIsHHU6swSu9piIo=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-circleBrushStrokes.fe8fc3ee52e1d90e9236be8c36a27711efa024beb4da304829f95dfbb61d6e84.js" integrity="sha256-/o/D7lLh2Q6SNr6MNqJ3Ee&#43;gJL602jBIKfld&#43;7YdboQ=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sketch-meta.71b5202ea881c86ac19e4b55414656a5444204a4ba08ff7368a5aa99c0a60949.js" integrity="sha256-cbUgLqiByGrBnktVQUZWpURCBKS6CP9zaKWqmcCmCUk=" crossorigin="anonymous" defer></script>
+
+        
+        
+        <script type="text/javascript" src="/js/sidebar-sketch.min.2e95015880993ef9abcad62d111decea22406616931bce193254bf8af2339953.js" integrity="sha256-LpUBWICZPvmrytYtER3s6iJAZhaTG84ZMlS/ivIzmVM=" crossorigin="anonymous" defer></script>
+    
+    
+    
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="canonical" href="/post/financial-sentiment-3/">
+    
+    
+    
+    
+    
+
+    
+    <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/images/profile.png" /><meta name="twitter:title" content="Sentiment Analysis of Financial News Headlines with Python - Part 3"/>
+<meta name="twitter:description" content="Check out the Github for this project
+This post is the first of a 3 part series.
+Part 1 - Scraping financial news headlines. Part 2 - Performing sentiment analysis to get sentiment scores for each headline. Part 3 - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day. This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis."/>
+
+</head><body>
+        <div class="main">
+            <div class="page-top">
+    <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false" >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    <ul class="nav" id="navMenu">
+        
+        
+            
+            <li><a  href="/"  title="">Home</a></li>
+        
+            
+            <li><a  href="/post/"  title="">Posts</a></li>
+        
+            
+            <li><a  href="/shiny-apps/"  title="">Shiny Apps</a></li>
+        
+            
+            <li><a  href="/cv/"  title="">CV</a></li>
+        
+            
+            <li><a  href="/contact/"  title="">Contact</a></li>
+        
+        <li class="grow"></li>
+        
+        <li>
+            <a class="theme-switch" title="Switch Theme">
+                <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+            <div class="sidebar" id="sidebar">
+    <div class="top-toc">
+        <img src="/images/tyaan-profile.png" alt="profile picture">
+        <a href="/">Tyaan Singh</a>
+        
+        <p>
+            data science portfolio
+        </p>
+        
+    </div>
+    
+    <div class="intro">
+        <p></p>
+    </div>
+    
+
+    <div class="middle-sidebar grow" id="middle-sidebar">
+
+        
+            
+            
+                
+            
+
+            
+        
+    </div>
+
+    <div class="footer">
+        <ul class="social-links">
+            
+            <li>
+                <a href="http://www.linkedin.com/in/tyaansingh" target="_blank" rel="noopener noreferrer" rel="me" aria-label="Linkedin">
+                    <i class="fab fa-linkedin" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="https://github.com/tyaan" target="_blank" rel="noopener noreferrer" rel="me" aria-label="GitHub">
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+            <li>
+                <a href="mailto:singhtyaan@gmail.com" target="_blank" rel="noopener noreferrer" rel="me" aria-label="e-mail">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                </a>
+            </li>
+            
+        </ul>
+
+        <div class="by">by Tyaan Singh <b>·</b> 2024</div>
+    </div>
+</div>
+            <div class="content">
+<div class="post">
+    
+    <div class="post-title">
+        <h1>Sentiment Analysis of Financial News Headlines with Python - Part 3</h1>
+        
+            <div class="post-header">
+    <div style="padding-top: 10px;">
+        <i class="far fa-calendar"></i><span class="date">Feb 18, 2024</span>
+        <i class="far fa-clock"></i><span class="reading-time">8 minutes</span>
+        
+
+
+    </div>
+</div>
+        
+    </div>
+    <div class="post-content">
+        <hr>
+<blockquote>
+<p>Check out the <a href="https://github.com/tyaan/Stock-Prediction-with-Sentiment-Analysis">Github for this project</a></p>
+</blockquote>
+<p>This post is the first of a 3 part series.</p>
+<ul>
+<li><a href="/post/financial-sentiment-1/">Part 1</a> - Scraping financial news headlines.</li>
+<li><a href="/post/financial-sentiment-2/">Part 2</a> - Performing sentiment analysis to get sentiment scores for each headline.</li>
+<li><a href="/post/financial-sentiment-3/">Part 3</a> - Aggregating our headline sentiment scores to create a sentiment value for each day the market is open, and checking for correlation between this and the stock price movement over the following day.</li>
+</ul>
+<p>This project is the first addition to my data science portfolio. The purpose of this project is to showcase web scraping, sentiment analysis, and some basic statistical analysis. I&rsquo;m going to write it in a tutorial style if anyone out there wants to follow along.</p>
+<hr>
+<p>In this part we will be aggregating our AAPL stock news headline sentiment scores to get a sentiment value at the close of each stock market day. We will then check if there is any correlation between these scores and the price change at the close of the following market day. If the sentiment in the news headlines is any indication of price movement, you would expect to see positive price movement on days with high positive sentiment, and negative price movement on days with high negative sentiment.</p>
+<p>First we need to collect daily AAPL stock price data. You can download this data as csv files from <a href="https://www.marketwatch.com/investing/stock/aapl/download-data">marketwatch</a>.</p>
+<p>Now lets combine our multiple AAPL stock price csv files downloaded from marketwatch into one data frame.
+We will also load our article headlines from the csv file we created in <a href="/post/financial-sentiment-2/">Part 2</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> pandas <span style="color:#ff79c6">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> datetime
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>stock_price_folder <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;AAPL stock price data&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_list <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Loops over all csv files in the stock price folder</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> root, <span style="color:#8be9fd;font-style:italic">dir</span>, files <span style="color:#ff79c6">in</span> os<span style="color:#ff79c6">.</span>walk(stock_price_folder):
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> file <span style="color:#ff79c6">in</span> files:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(file)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># Adds the csv file to a data frame and adds that data frame to a list of data frames</span>
+</span></span><span style="display:flex;"><span>        df_list<span style="color:#ff79c6">.</span>append(pd<span style="color:#ff79c6">.</span>read_csv(os<span style="color:#ff79c6">.</span>path<span style="color:#ff79c6">.</span>join(root, file)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Combines all the data frames into one</span>
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> pd<span style="color:#ff79c6">.</span>concat(df_list)
+</span></span><span style="display:flex;"><span>df_aapl<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img1.png" alt="financial-sentiment-3-img1"></p>
+<p>Next let&rsquo;s convert the date column to datetime objects and sort by date values since the csv files may not have been loaded in order.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df_aapl[<span style="color:#f1fa8c">&#39;Date&#39;</span>] <span style="color:#ff79c6">=</span> df_aapl[<span style="color:#f1fa8c">&#39;Date&#39;</span>]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> x: datetime<span style="color:#ff79c6">.</span>strptime(x, <span style="color:#f1fa8c">&#34;%m/</span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">/%Y&#34;</span>))
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> df_aapl<span style="color:#ff79c6">.</span>sort_values(<span style="color:#f1fa8c">&#34;Date&#34;</span>)<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span></code></pre></div><p>Now for the purposes of this project we only need the date and the close price columns, so let&rsquo;s drop the others. We also want to get the time of the close price which is 4pm on each day, so let&rsquo;s add 4pm to our current datetime values, and change the column name to Datetime.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> df_aapl<span style="color:#ff79c6">.</span>drop(columns<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#34;Open&#34;</span>, <span style="color:#f1fa8c">&#34;High&#34;</span>, <span style="color:#f1fa8c">&#34;Low&#34;</span>, <span style="color:#f1fa8c">&#34;Volume&#34;</span>])
+</span></span><span style="display:flex;"><span>df_aapl[<span style="color:#f1fa8c">&#34;Date&#34;</span>] <span style="color:#ff79c6">=</span> df_aapl[<span style="color:#f1fa8c">&#34;Date&#34;</span>]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> x: datetime<span style="color:#ff79c6">.</span>combine(x, time(<span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">0</span>)))
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> df_aapl<span style="color:#ff79c6">.</span>rename(columns<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#34;Date&#34;</span>:<span style="color:#f1fa8c">&#34;Datetime&#34;</span>})
+</span></span><span style="display:flex;"><span>df_aapl<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img2.png" alt="financial-sentiment-3-img2"></p>
+<p>Ok now let&rsquo;s load up our headlines csv file we created in <a href="/post/financial-sentiment-2/">Part 2</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df_headlines <span style="color:#ff79c6">=</span> pd<span style="color:#ff79c6">.</span>read_csv(<span style="color:#f1fa8c">&#34;headlines_w_sentiment.csv&#34;</span>)
+</span></span><span style="display:flex;"><span>df_headlines<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img2-1.png" alt="financial-sentiment-3-img21"></p>
+<p>We want to convert the date and time text columns into a single datetime column of datetime objects, as we will need to know each headlines distance in time from the datetimes that we will be calculating our aggregated sentiment scores at.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>] <span style="color:#ff79c6">=</span> df_headlines[[<span style="color:#f1fa8c">&#34;Date&#34;</span>, <span style="color:#f1fa8c">&#34;Time&#34;</span>]]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> row: <span style="color:#f1fa8c">&#34;,&#34;</span><span style="color:#ff79c6">.</span>join(row<span style="color:#ff79c6">.</span>values<span style="color:#ff79c6">.</span>astype(<span style="color:#8be9fd;font-style:italic">str</span>)), axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>df_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>] <span style="color:#ff79c6">=</span> df_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> x: datetime<span style="color:#ff79c6">.</span>strptime(x, <span style="color:#f1fa8c">&#34;%m/</span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">/%Y,%I:%M%p&#34;</span>))
+</span></span><span style="display:flex;"><span>df_headlines <span style="color:#ff79c6">=</span> df_headlines<span style="color:#ff79c6">.</span>sort_values(<span style="color:#f1fa8c">&#34;Datetime&#34;</span>)<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span>df_headlines <span style="color:#ff79c6">=</span> df_headlines<span style="color:#ff79c6">.</span>drop(columns<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#34;Date&#34;</span>, <span style="color:#f1fa8c">&#34;Time&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_headlines<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img3.png" alt="financial-sentiment-3-img3"></p>
+<p>Now we want to aggregate the headline sentiments to get sentiment values for each datetime in the stock price data frame. There are many different methods to aggregating sentiment scores. The most common method seems to be just to take the average of the sentiment scores over the past n days. We are going to go one step further and take a weighted sum of sentiment scores over the past n days using a gaussian function, so that the sentiment of more recent news headlines have higher weighting than articles further back in time, as would be the case in reality.</p>
+<p>So let&rsquo;s create a function that will return a Positive, Negative and Neutral sentiment value for any given time t, by taking a gaussian weighted sum of our headline sentiments over the past n days. I decided to set n as 7, to aggregate sentiments from headlines over the previous week, but you could set this to any amount of days that you want. If you really want to go overkill, you could test for different values of n and different values for the curve of the gaussian function to see which maximises correlation between the sentiment values and price movement, but I would really only go that far if your sentiment values have already proved to be useful and you want to maximise their usefulness.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> timedelta
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> numpy <span style="color:#ff79c6">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> scipy.stats <span style="color:#ff79c6">import</span> norm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">7</span>
+</span></span><span style="display:flex;"><span>gaussian_curve <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Gets sentiment values at time t by aggregating over last n days using gaussian weighted sum</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_sentiment_at_time</span>(t):
+</span></span><span style="display:flex;"><span>    prev_time <span style="color:#ff79c6">=</span> t <span style="color:#ff79c6">-</span> timedelta(days<span style="color:#ff79c6">=</span>n)
+</span></span><span style="display:flex;"><span>    relevant_headlines <span style="color:#ff79c6">=</span> df_headlines[(df_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>] <span style="color:#ff79c6">&lt;</span> t) <span style="color:#ff79c6">&amp;</span> (df_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>] <span style="color:#ff79c6">&gt;</span> prev_time)]<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span>(<span style="color:#8be9fd;font-style:italic">len</span>(relevant_headlines) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>):
+</span></span><span style="display:flex;"><span>        relevant_headlines[<span style="color:#f1fa8c">&#34;Weight&#34;</span>] <span style="color:#ff79c6">=</span> relevant_headlines[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> x: norm<span style="color:#ff79c6">.</span>pdf(gaussian_curve<span style="color:#ff79c6">*</span>(t <span style="color:#ff79c6">-</span> x)<span style="color:#ff79c6">.</span>total_seconds()<span style="color:#ff79c6">/</span>(n<span style="color:#ff79c6">*</span><span style="color:#bd93f9">24</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">60</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">60</span>)))
+</span></span><span style="display:flex;"><span>        pos_weighted_sum <span style="color:#ff79c6">=</span> (relevant_headlines[<span style="color:#f1fa8c">&#34;Positive&#34;</span>]<span style="color:#ff79c6">*</span>relevant_headlines[<span style="color:#f1fa8c">&#34;Weight&#34;</span>])<span style="color:#ff79c6">.</span>sum()
+</span></span><span style="display:flex;"><span>        neg_weighted_sum <span style="color:#ff79c6">=</span> (relevant_headlines[<span style="color:#f1fa8c">&#34;Negative&#34;</span>]<span style="color:#ff79c6">*</span>relevant_headlines[<span style="color:#f1fa8c">&#34;Weight&#34;</span>])<span style="color:#ff79c6">.</span>sum()
+</span></span><span style="display:flex;"><span>        neu_weighted_sum <span style="color:#ff79c6">=</span> (relevant_headlines[<span style="color:#f1fa8c">&#34;Neutral&#34;</span>]<span style="color:#ff79c6">*</span>relevant_headlines[<span style="color:#f1fa8c">&#34;Weight&#34;</span>])<span style="color:#ff79c6">.</span>sum()
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">else</span>:
+</span></span><span style="display:flex;"><span>        pos_weighted_sum <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>nan
+</span></span><span style="display:flex;"><span>        neg_weighted_sum <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>nan
+</span></span><span style="display:flex;"><span>        neu_weighted_sum <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>nan
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> pd<span style="color:#ff79c6">.</span>Series([pos_weighted_sum, neg_weighted_sum, neu_weighted_sum], index<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#34;pos_sentiment&#34;</span>, <span style="color:#f1fa8c">&#34;neg_sentiment&#34;</span>, <span style="color:#f1fa8c">&#34;neu_sentiment&#34;</span>])
+</span></span></code></pre></div><p>As you can see, I have dealt with the case where there are no headlines over the past n days by just returning None. When we use this function to get sentiment values for each market closing datetime, we can just replace any None values with the sentiment from the previous market day, as I think we can assume that if there have been no new articles, the sentiment will continue to be the same.</p>
+<p>So now let&rsquo;s run our function for each datetime in the AAPL stock price data frame and add the outputted scores to the data frame.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#6272a4"># Removing n days from beginning of stocks dataframe as we will be summing sentiments over previous n days</span>
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> df_aapl[df_aapl[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>] <span style="color:#ff79c6">&gt;</span> (df_aapl[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>][<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">+</span> timedelta(days<span style="color:#ff79c6">=</span>n<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>))]<span style="color:#ff79c6">.</span>reset_index(drop<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Apply sentiment aggregation function to each closing time in stocks dataframe and add as new columns</span>
+</span></span><span style="display:flex;"><span>sentiment_values <span style="color:#ff79c6">=</span> df_aapl[<span style="color:#f1fa8c">&#34;Datetime&#34;</span>]<span style="color:#ff79c6">.</span>apply(<span style="color:#ff79c6">lambda</span> t: get_sentiment_at_time(t))
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> pd<span style="color:#ff79c6">.</span>concat([df_aapl, sentiment_values], axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_aapl<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img4.png" alt="financial-sentiment-3-img4"></p>
+<p>Now let&rsquo;s replace any missing sentiment values with the value from the previous market day. I am using isna().sum() to make sure this works and there are no null values left.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">for</span> index, row <span style="color:#ff79c6">in</span> df_aapl<span style="color:#ff79c6">.</span>iterrows():
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">if</span> pd<span style="color:#ff79c6">.</span>isnull(row[<span style="color:#f1fa8c">&#34;pos_sentiment&#34;</span>]):
+</span></span><span style="display:flex;"><span>        df_aapl<span style="color:#ff79c6">.</span>iloc[index, <span style="color:#bd93f9">2</span>:<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">=</span> df_aapl<span style="color:#ff79c6">.</span>iloc[index<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>:<span style="color:#bd93f9">5</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_aapl<span style="color:#ff79c6">.</span>isna()<span style="color:#ff79c6">.</span>sum()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img5.png" alt="financial-sentiment-3-img5"></p>
+<p>Ok great, we can see our dataframe now has no missing values.</p>
+<p>Now we want to check if there is any correlation between the sentiment values we have calculated, and the price movement of the stock over the following day. For ease of access, let&rsquo;s first make a column &ldquo;Price Movement&rdquo; that will contain the price movement over the following market day for each closing price.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>price_movement <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Loops though all price values except for final value and get difference between this value and the value in the next row</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(df_aapl)<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>):
+</span></span><span style="display:flex;"><span>    price_movement<span style="color:#ff79c6">.</span>append(df_aapl[<span style="color:#f1fa8c">&#34;Close&#34;</span>][i<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">-</span> df_aapl[<span style="color:#f1fa8c">&#34;Close&#34;</span>][i])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Drops final row where price change couldn&#39;t be calculated</span>
+</span></span><span style="display:flex;"><span>df_aapl <span style="color:#ff79c6">=</span> df_aapl<span style="color:#ff79c6">.</span>drop(df_aapl<span style="color:#ff79c6">.</span>index[<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df_aapl[<span style="color:#f1fa8c">&#34;Price Movement&#34;</span>] <span style="color:#ff79c6">=</span> price_movement
+</span></span><span style="display:flex;"><span>df_aapl<span style="color:#ff79c6">.</span>head()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img6.png" alt="financial-sentiment-3-img6"></p>
+<p>Now there are a few ways we could check the correlation between the sentiments and price movement. The corr() function is the obvious choice, but I want to see a visual representation of this. So let&rsquo;s plot the positive sentiment values againts the price movement with a linear regression line. If there is any correlation, you would expect to see high values of price movement for high values of positive sentiment, and a positive gradient on the regression line.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> seaborn <span style="color:#ff79c6">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> matplotlib.pyplot <span style="color:#ff79c6">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> scipy.stats <span style="color:#ff79c6">import</span> linregress
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>figure(figsize<span style="color:#ff79c6">=</span>(<span style="color:#bd93f9">20</span>, <span style="color:#bd93f9">10</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>regression_line <span style="color:#ff79c6">=</span> sns<span style="color:#ff79c6">.</span>regplot(x<span style="color:#ff79c6">=</span>df_aapl[<span style="color:#f1fa8c">&#34;pos_sentiment&#34;</span>], y<span style="color:#ff79c6">=</span>df_aapl[<span style="color:#f1fa8c">&#34;Price Movement&#34;</span>], scatter_kws<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#39;marker&#39;</span>: <span style="color:#f1fa8c">&#39;o&#39;</span>}, line_kws<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#39;color&#39;</span>: <span style="color:#f1fa8c">&#39;red&#39;</span>})
+</span></span><span style="display:flex;"><span>slope <span style="color:#ff79c6">=</span> linregress(df_aapl[<span style="color:#f1fa8c">&#34;pos_sentiment&#34;</span>], df_aapl[<span style="color:#f1fa8c">&#34;Price Movement&#34;</span>])<span style="color:#ff79c6">.</span>slope
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Print slope of regression line and correlation value </span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Correlation value = </span><span style="color:#f1fa8c">{</span>df_aapl[<span style="color:#f1fa8c">&#39;Price Movement&#39;</span>]<span style="color:#ff79c6">.</span>corr(df_aapl[<span style="color:#f1fa8c">&#39;pos_sentiment&#39;</span>])<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Slope (Gradient) of the Regression Line: </span><span style="color:#f1fa8c">{</span>slope<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#39;Price Movement for Positive Sentiment Values&#39;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Positive Sentiment&#39;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>ylabel(<span style="color:#f1fa8c">&#39;Price Movement&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>show()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img7.png" alt="financial-sentiment-3-img7"></p>
+<p>Now let&rsquo;s do the same for negative sentiment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>figure(figsize<span style="color:#ff79c6">=</span>(<span style="color:#bd93f9">20</span>, <span style="color:#bd93f9">10</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>regression_line <span style="color:#ff79c6">=</span> sns<span style="color:#ff79c6">.</span>regplot(x<span style="color:#ff79c6">=</span>df_aapl[<span style="color:#f1fa8c">&#34;neg_sentiment&#34;</span>], y<span style="color:#ff79c6">=</span>df_aapl[<span style="color:#f1fa8c">&#34;Price Movement&#34;</span>], scatter_kws<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#39;marker&#39;</span>: <span style="color:#f1fa8c">&#39;o&#39;</span>}, line_kws<span style="color:#ff79c6">=</span>{<span style="color:#f1fa8c">&#39;color&#39;</span>: <span style="color:#f1fa8c">&#39;red&#39;</span>})
+</span></span><span style="display:flex;"><span>slope <span style="color:#ff79c6">=</span> linregress(df_aapl[<span style="color:#f1fa8c">&#34;neg_sentiment&#34;</span>], df_aapl[<span style="color:#f1fa8c">&#34;Price Movement&#34;</span>])<span style="color:#ff79c6">.</span>slope
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Print slope of regression line and correlation value </span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Correlation value = </span><span style="color:#f1fa8c">{</span>df_aapl[<span style="color:#f1fa8c">&#39;Price Movement&#39;</span>]<span style="color:#ff79c6">.</span>corr(df_aapl[<span style="color:#f1fa8c">&#39;neg_sentiment&#39;</span>])<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Slope (Gradient) of the Regression Line: </span><span style="color:#f1fa8c">{</span>slope<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#39;Price Movement for Negative Sentiment Values&#39;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Negative Sentiment&#39;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>ylabel(<span style="color:#f1fa8c">&#39;Price Movement&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#ff79c6">.</span>show()
+</span></span></code></pre></div><p><img src="/images/financial-sentiment-3-img8.png" alt="financial-sentiment-3-img8"></p>
+<p>The correlation is very low for both, and the price movement is pretty evenly distributed around 0 for all values of postive and negative sentiment. This essentially means that the sentiment found in our article headlines is not a good indicator of price movement.</p>
+<p>But do not despair! This was to be expected, if it were this easy to predict stock price changes, we would all be rich. Sentiments from Investopedia headlines may not be a useful indictor of stock price movement, but it might still be a useful addition to a more complex indicator taking data from many sources. There are also many paid API&rsquo;s with higher quality sources of financial news, Investopedia was just a good free example for this project.</p>
+<p>I hope you enjoyed following along with this project, and you learned some skills that you can apply to your own projects.</p>
+<p>Thanks for reading!</p>
+
+    </div>
+    <div class="post-footer">
+        <div class="info">
+            
+            <span class="separator"><a class="tag" href="/tags/python/">Python</a><a class="tag" href="/tags/web-scraping/">Web Scraping</a><a class="tag" href="/tags/sentiment-analysis/">Sentiment Analysis</a><a class="tag" href="/tags/finance/">Finance</a></span>
+        </div>
+        
+
+
+    </div>
+    
+        
+    
+</div>
+
+                <div class="grow"></div>
+                <div class="built-with">
+    Built with <a href="https://gohugo.io/">Hugo</a> <b>·</b> Using the <a href="https://github.com/LucasVadilho/heyo-hugo-theme">heyo</a> theme
+</div>
+            </div>
+        </div>
+        
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script type="text/javascript">
+            
+            
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$','$$'], ['\\[', '\\]']]
+                },
+                svg: {
+                    scale: 1.25,
+                }
+            };
+        </script><script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.1.0/es5/tex-mml-svg.min.js" integrity="sha512-/mL9Gs6E5Bz6NtPOr9eY&#43;T8IIdJbo2JL3TudApzFFelwBXEc3TeFLU6kPq122TJROv7jkktuBRkz5h8vGzrsyA==" crossorigin="anonymous"></script>
+    </body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shiny-Apps on Tyaan Singh | Data Science Portfolio</title>
+    <link>/shiny-apps/</link>
+    <description>Recent content in Shiny-Apps on Tyaan Singh | Data Science Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>singhtyaan@gmail.com (Tyaan Singh)</managingEditor>
+    <webMaster>singhtyaan@gmail.com (Tyaan Singh)</webMaster>
+    <lastBuildDate>Mon, 26 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/shiny-apps/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Shiny App - Analysis of Director Genders in Popular Films</title>
+      <link>/shiny-apps/shiny-app-director-gender-analysis/</link>
+      <pubDate>Mon, 26 Feb 2024 00:00:00 +0000</pubDate><author>singhtyaan@gmail.com (Tyaan Singh)</author>
+      <guid>/shiny-apps/shiny-app-director-gender-analysis/</guid>
+      <description>&lt;img src=&#34;/images/directors-shiny-app.png&#34; alt=&#34;directors-shiny-app.png&#34;&gt;</description>
+    </item>
+  </channel>
+</rss>

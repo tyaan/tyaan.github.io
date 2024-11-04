@@ -1,0 +1,1 @@
+function handleMessage(e){if(e.source===document.getElementById("shiny-iframe").contentWindow){var n,t=e.data;t&&t.height&&(n=document.getElementById("shiny-iframe"),n.style.height=t.height+"px")}}window.addEventListener("message",handleMessage)
